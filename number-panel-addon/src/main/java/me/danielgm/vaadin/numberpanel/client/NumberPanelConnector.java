@@ -1,67 +1,70 @@
+/*
+ * Copyright 2008 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package me.danielgm.vaadin.numberpanel.client;
+
+import com.vaadin.client.annotations.OnStateChange;
+import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.shared.ui.Connect;
 
 import me.danielgm.vaadin.numberpanel.NumberPanel;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.MouseEventDetailsBuilder;
-import com.vaadin.client.communication.RpcProxy;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.shared.ui.Connect;
-
-// Connector binds client-side widget class to server-side component class
-// Connector lives in the client and the @Connect annotation specifies the
-// corresponding server-side component
+/**
+ * 
+ * @author Daniel Garcia
+ *
+ */
+@SuppressWarnings("serial")
 @Connect(NumberPanel.class)
 public class NumberPanelConnector extends AbstractComponentConnector {
 
-    // ServerRpc is used to send events to server. Communication implementation
-    // is automatically created here
-    NumberPanelServerRpc rpc = RpcProxy.create(NumberPanelServerRpc.class, this);
-
-    public NumberPanelConnector() {
-        
-        // To receive RPC events from server, we register ClientRpc implementation 
-        registerRpc(NumberPanelClientRpc.class, Window::alert);
-
-        // We choose listed for mouse clicks for the widget
-        getWidget().addClickHandler(event -> {
-                final MouseEventDetails mouseDetails = MouseEventDetailsBuilder
-                        .buildMouseEventDetails(event.getNativeEvent(),
-                                getWidget().getElement());
-                
-                // When the widget is clicked, the event is sent to server with ServerRpc
-                rpc.clicked(mouseDetails);
-            }
-        );
-
-    }
-
-    // We must implement getWidget() to cast to correct type 
-    // (this will automatically create the correct widget type)
     @Override
     public NumberPanelWidget getWidget() {
         return (NumberPanelWidget) super.getWidget();
     }
 
-    // We must implement getState() to cast to correct type
     @Override
     public NumberPanelState getState() {
         return (NumberPanelState) super.getState();
     }
-
-    // Whenever the state changes in the server-side, this method is called
-    @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
-        // State is directly readable in the client after it is set in server
-        final String text = getState().text;
-        getWidget().setText(text);
+    
+    // State changes
+    
+    @OnStateChange({"prefix", "integerPart", "fractionalPart", "suffix"})
+    private void updateValue() {
+    	getWidget().load(getState().prefix, getState().integerPart, getState().fractionalPart, getState().suffix);
     }
+    
+    @OnStateChange("prefixSize")
+    private void updatePrefixSize() {
+    	getWidget().setPrefixSize(getState().prefixSize);
+    }
+    
+    @OnStateChange("integerPartSize")
+    private void updateIntegerPartSize() {
+    	getWidget().setIntegerPartSize(getState().integerPartSize);
+    }
+    
+    @OnStateChange("fractionalPartSize")
+    private void updateFractionalPartSize() {
+    	getWidget().setFractionalPartSize(getState().fractionalPartSize);
+    }
+    
+    @OnStateChange("suffixSize")
+    private void updateSuffixSize() {
+    	getWidget().setSuffixSize(getState().suffixSize);
+    }
+    
 }

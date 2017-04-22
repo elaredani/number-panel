@@ -28,7 +28,13 @@ public class DemoUI extends UI
     protected void init(VaadinRequest request) {
 
         // Initialize our new UI component
-        final NumberPanel component = new NumberPanel();
+        final NumberPanel number = new NumberPanel();
+        number.setValue(1542.872);
+        number.setIntegerPartSize("50px");
+        number.setFractionalPartSize("30px");
+        number.setSuffixSize("30px");
+        number.setSuffix("$");
+    
 
         // Show it in the middle of the screen
         final VerticalLayout layout = new VerticalLayout();
@@ -36,8 +42,8 @@ public class DemoUI extends UI
         layout.setSizeFull();
         layout.setMargin(false);
         layout.setSpacing(false);
-        layout.addComponent(component);
-        layout.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
+        layout.addComponent(number);
+        layout.setComponentAlignment(number, Alignment.MIDDLE_CENTER);
         setContent(layout);
     }
 }
